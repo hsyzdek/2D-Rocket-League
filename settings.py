@@ -29,19 +29,28 @@ def displayDimensions():
 DISPLAYSURF = pygame.display.set_mode((displayWidth,displayHeight))#, pygame.FULLSCREEN)
 pygame.display.set_caption('Driving Simluator')
 
-gravity = [0,300]
-forces = {}
-forces["gravity"] = gravity
-forces["normals"] = []
-forces["ball"] = [0,0]
-forces["cars"] = []
-forces["driving"] = [0,0]
-forces["boost"] = [0,0]
-forces["friction"] = [0,0]
-forces["airFriction"] = [0,0]
-COF = 0.99 #coefficient of friction
+#gravity functions
+gravity = [0, 0]
+def setGravity(xGravity = 0, yGravity = 300):
+    gravity = [xGravity, yGravity]
+def gravity():
+    return gravity
 
-torques = {}
+#boost functions
+boostStrength = -800
+
+##forces = {}
+##forces["gravity"] = gravity
+##forces["normals"] = []
+##forces["ball"] = [0,0]
+##forces["cars"] = []
+##forces["driving"] = [0,0]
+##forces["boost"] = [0,0]
+##forces["friction"] = [0,0]
+##forces["airFriction"] = [0,0]
+##COF = 0.99 #coefficient of friction
+##
+##torques = {}
 #maxSpeed = ? for supersonic
 
 #print(pygame.display.get_driver())
