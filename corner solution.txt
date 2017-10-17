@@ -1,0 +1,14 @@
+(y - ya)*(xb - xa) = (x - xa)*(yb - ya)
+
+ya = m*x + q
+yb = n*x + w
+
+xa = o*x + a
+xb = p*x + r
+
+y = z
+x = v
+
+(z - m*x - q)*(p*x + r - (o*x + e)) = (v - (o*x + e))*(n*x + w - m*x - q)
+
+x = (sqrt((-a n + m r - m v + n v - o w + o z + p q - p z)^2 - 4 (m p - n o) (-a w + a z + q r - q v - r z + v w)) - a n + m r - m v + n v - o w + o z + p q - p z)/(2 (n o - m p)) and n o - m p!=0
