@@ -423,7 +423,7 @@ def frictionForce(car):
         car["forces"].append([(COF * math.cos(math.radians(car["r"])), COF * math.sin(math.radians(car["r"]))), car["pos"]])#* Normal force magnitide
         #^address issue about never being 0
         
- def rotationDirection(car, rotation):
+def rotationDirection(car, rotation):
     theta = 0
     for torqueAngle in car["torqueAngles"]: #issue if ball hits corner from underside, rotates the wrong way
         if theta <= angle < (theta + 90):
