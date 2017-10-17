@@ -52,7 +52,7 @@ def createBall(ball):
 #Returns corners of walls, starting and ending with the ceiling/left wall corner
 #and going counter-clockwise
 def createWalls(wallW, goalW, goalH, w, h):
-    return ( (wallW + goalW, wallW),
+    walls =  ( (wallW + goalW, wallW),
              (wallW + goalW, h - (wallW + goalH)),
              (wallW,  h - (wallW + goalH)),
              (wallW, h - wallW),
@@ -61,3 +61,5 @@ def createWalls(wallW, goalW, goalH, w, h):
              (w - (wallW + goalW), h - (wallW + goalH)),
              (w - (wallW + goalW), wallW),
              (wallW + goalW, wallW) )
+    wallDirections = (-1, -1, -1, 1, 1, -1, 1, -1)
+    return walls, wallDirections
