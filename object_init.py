@@ -1,11 +1,11 @@
 import pygame, sys, math
 from pygame.locals import *
 
-from physics_engine import pointDistance
+from physics_engine import pointDistance, pointAngle
 from settings import *
 
 #initializes properties of a car with given paramaters
-def createCar (cars, team, cX, cY, img, w, h, mass, ku, kd, kl, kr, kb, comX, comY, rotation = 0, angVel = 0):
+def createCar (cars, team, cX, cY, img, w, h, mass, ku, kd, kl, kr, kb, comX, comY, rotation = 0, angVel = 0, angAcc = 0):
     car = {}
     car["pos"] = (cX, cY)
     car["team"] = team
@@ -13,14 +13,15 @@ def createCar (cars, team, cX, cY, img, w, h, mass, ku, kd, kl, kr, kb, comX, co
     car["w"] = w
     car["h"] = h
     car["mass"] = mass
-    car["trc"] = (cX + w/2, cY + h/2)
-    car["tlc"] = (cX - w/2, cY + h/2)
-    car["brc"] = (cX + w/2, cY - h/2)
-    car["blc"] = (cX - w/2, cY - h/2)
+    car["trc"] = (cX + w/2, cY - h/2)
+    car["tlc"] = (cX - w/2, cY - h/2)
+    car["blc"] = (cX - w/2, cY + h/2)
+    car["brc"] = (cX + w/2, cY + h/2)
     car["dc"] = car["tlc"]
-    car["r"] = rotation
     car["vel"] = (0, 0)
+    car["r"] = rotation
     car["angV"] = angVel
+    car["angA"] = angAcc
     car["ku"] = ku
     car["kd"] = kd
     car["kr"] = kr
@@ -28,7 +29,14 @@ def createCar (cars, team, cX, cY, img, w, h, mass, ku, kd, kl, kr, kb, comX, co
     car["kb"] = kb
     car["cornerAngle"] = math.atan(h/w)
     car["COM"] = (comX, comY) #COM = center of mass
-    car["COMInfo"] = (math.atan((cY - comY) / (comX - cX)), pointDistance(car["pos"], car["COM"]))
+    car["COMInfo"] = (pointAngle(car["pos"], car["COM"]), pointDistance(car["pos"], car["COM"]))
+    car["forceInputs"] = []
+    car["forces"] = []
+    car["torqueAngles"] = [pointAngle(car["COM"],car["trc"]),
+                           pointAngle(car["COM"],car["tlc"]),
+                           pointAngle(car["COM"],car["blc"]),
+                           pointAngle(car["COM"],car["brc"])]
+    car["torques"] = []
     cars.append(car)
 
 #initalizes ball
