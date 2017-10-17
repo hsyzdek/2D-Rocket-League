@@ -372,25 +372,71 @@ def detectCollision(p1, p2, pa, pb):
 
 def pointDistance(point1, point2):
     return ((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)**0.5
-
-def changeGravity(yGravity, xGravity = 0):
-    forces["gravity"] = (xGravity, yGravity)
-    
-def boundaryNormalForce(car):
-    if car["pos"][1] >= (displayHeight - (car["h"]/2)):
-        forces["normals"][0], forces["normals"][1] = -gravity[0], -gravity[1]
-        car["pos"] = (car["pos"][0],(displayHeight - (car["h"]/2)))
-        car["vel"] = (car["vel"][0], 0) #will be (carElasticity * -car["vel"][1])
-    else:
-        forces["normals"] = [0,0]
+def pointAngle(point1, point2): #initial, terminal
+    if abs(point1[0] - point2[0]) < MIN_ERROR:
+        if (point2[1] - point1[1]) > 0:
+            return 270
+        else:
+            return 90
+    aysmp = 0
+    if (point2[0] - point1[0]) < 0:
+        aysmp = 180
+    if aysmp == 0 and (point2[1] - point1[1]) > 0:
+        aysmp = 360
+    return math.degrees(math.atan((point1[1] - point2[1]) / (point2[0] - point1[0]))) + aysmp
 
 def isOnGround(car):
     if car["r"] == 0 and car["pos"][1] >= (displayHeight - (car["h"]/2)):
         return True
     return False
 
+
+#change all [force, locations] to tuples
+
+def normalForce(car):
+    if car["pos"][1] >= (displayHeight - (car["h"]/2)):
+        car["pos"] = (car["pos"][0],(displayHeight - (car["h"]/2)))
+        car["vel"] = (car["vel"][0], 0) #will be (carElasticity * -car["vel"][1])
+        car["forces"].append([(-gravity[0], -gravity[1]), car["pos"]]) #temporary until corners
+    else:
+        forces["normals"] = [0,0]
+
+def drivingForce(car, direction): #true for forwards, false for backwards
+    if direction:
+        car["forces"].append([(1000,0), car["pos"]])
+    else:
+        car["forces"].append([(-1000,0), car["pos"]])
+
+def boostForce(car):
+    boost = ((boostStrength * math.cos(math.radians(car["r"]))),(-boostStrength * math.sin(math.radians(car["r"]))))
+    car["forces"].append([boost, car["pos"]])
+    #print(boostStrength)
+
+#def carForce(car, cars):
+
+def ballForce(car, ball):
+    getCollisionCoords(car, ball)
+    
 def frictionForce(car):
-    if isOnGround(car):   
-        forces["friction"][0] = COF * -car["vel"][0]
-        forces["friction"][1] = COF * -car["vel"][1] 
+    netVel = ((car["vel"][0])**2 + (car["vel"][1])**2)**0.5
+    if isOnGround(car) and netVel >= MIN_VAL:
+        car["forces"].append([(COF * math.cos(math.radians(car["r"])), COF * math.sin(math.radians(car["r"]))), car["pos"]])#* Normal force magnitide
         #^address issue about never being 0
+        
+ def rotationDirection(car, rotation):
+    theta = 0
+    for torqueAngle in car["torqueAngles"]: #issue if ball hits corner from underside, rotates the wrong way
+        if theta <= angle < (theta + 90):
+            if angle < torqueAngle:
+                return 1
+            else:
+                return -1
+        theta += 90
+
+def torques(car, force, distance, rotation):
+    r = rotationDirection(car, rotation)
+    leverArm = (force[1][0] - car["pos"][0], car["pos"][1] - force[1][1])
+    forceMag = ((force[0][0]**2) + (force[0][1]**2))**0.5
+    theta = math.acos(((leverArm[0] * force[0]) + (leverArm[1] * force[1])) / (distance * forceMag))
+    netForce = math.son(theta)
+    return (r * netForce) / distance
