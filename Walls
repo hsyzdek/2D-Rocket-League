@@ -1,0 +1,83 @@
+#Takes two points as endpoints of a line segment, if there
+#is an intersection, return the point of intersection in a tuple, otherwise
+#return (-1,-1). If the lines are parallel, returns (-2, -2)
+def detectCollisionsBetweenLines(p1, p2, pa, pb):
+    x0 = p1[0]          
+    dx1 = p2[0] - p1[0] 
+    y0 = p1[1]          
+    dy1 = p2[1] - p1[1] 
+    xa = pa[0]          
+    dxa = pb[0] - pa[0] 
+    ya = pa[1]          
+    dya = pb[1] - pa[1] 
+    #Checks to see if the slopes are approximately equal, then return a seperate code
+    #so it can test to see if the lines are close enough to count as touching out
+    #of this function
+    if (abs(dy1 * dxa - dx1 * dya) < MIN_ERROR):
+        #If the line is horizontal
+        if abs(dy1) < 1:
+            return (-2, 0, ya - y0)
+        elif abs(dx1) < 1:
+            return (-2, xa - x0, 0)
+        else:
+            return (-2)
+    #Uses hardcore algebra. Paramatarize two lines into the forms:
+    #x0 + m * dx1 = x
+    #y0 + m * dy1 = y
+    #xa + n * dxa = x
+    #ya + n * dya = y
+    #Then, solve for x and y in terms of dx1, dy1, dxa, dya, x0, y0, xa, ya.
+    #Solved equation has 16 components.
+    else:
+        x = (x0* dy1 * dxa - dx1 * (y0*dxa + xa*dya - dxa*ya)) / (dy1 * dxa - dx1 * dya)
+        y = (x0 * dy1 * dya - dx1 * y0 * dya - dy1 * xa * dya + dy1 * dxa * ya) / (dy1 * dxa - dx1 * dya)
+        #If the point is in the boundaries of the line segment
+        if (p1[0] - MIN_ERROR <= x <= p2[0] + MIN_ERROR or p2[0] - MIN_ERROR <= x <= p1[0] + MIN_ERROR) and (pa[0] - MIN_ERROR <= x <= pb[0] or pb[0] - MIN_ERROR <= x <= pa[0] + MIN_ERROR) and (p1[1] - MIN_ERROR <= y <= p2[1] or p2[1] - MIN_ERROR <= y <= p1[1] + MIN_ERROR) and (pa[1] - MIN_ERROR <= y <= pb[1] or pb[1] <= y <= pa[1] + MIN_ERROR):
+            return(x, y)
+        else:
+            return (-1, -1)
+
+class wall:
+    def __init__(self, pa, pb, isFloor):
+        self.pa = pa
+        self.pb = pb
+        self.isFloor = isFloor
+    def getEndPoints(self):
+        return (self.pa, self.pb)
+    def isFloor(self):
+        return isFloor
+    def getNormalVector(self):
+        return (pa[1]  - pb[1], pb[0] - pa[0]) 
+
+class Walls:
+    #Takes in tuples of wall tuples.
+    def __init__(self):
+        self.corners = []
+        self.walls = set([])
+
+    def addWall(self, w):
+        walls.append(w)
+        corners.add(w.pa)
+        corners.add(w.pb)
+
+    
+    def getCollisionTimes(self, corners, cornerSpeeds):
+        #todo: implement everything
+        maxTime = 0
+        for i in range(len(corners)):
+            #get the location of the corner before and after the tick.
+            c1 = corners[i]
+            cs = cornerSpeeds[i]
+            c2 = (c1[0] - cs[0], c2[1] - cs[1])
+            for w in walls:
+                col = detectCollisionsBetweenLines(c1, c2, w.pa, w.pb)
+                #if there is an intersection, figure out how long it would take
+                #to go back to the point of collision. Find the longest such time
+                if col[0] != -2 and col[0] != -1:
+                    t = 1 - (col[0] - c2[0])/cs[0]
+                    if t > maxTime:
+                        maxTime = t
+                    
+        return maxTime
+
+    
