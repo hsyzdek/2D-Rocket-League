@@ -7,7 +7,7 @@ from settings import *
 MAX_SLOPE = 21600001 #max slope with this restriction and a 4k screen
 MIN_ERROR = 0.0001   #min difference tolerated
 
-def miracleFunction(p1, p1speed, pa, paspeed, p0):
+def linePassesThroughAPoint(p1, p1speed, pa, paspeed, p0):
     # This function solves the problem of when the line between two parametric lines intersects a point.
     # Create two parametric lines with forms
     # ya = m*x + q
@@ -45,12 +45,14 @@ def miracleFunction(p1, p1speed, pa, paspeed, p0):
 
     denom = (2*(n*o-m*p))
     if abs(denom) < MIN_ERROR:
+        #Todo
         print("cool, but unsolved")
     else:
         sqrt = pow(pow(-a*n+m*r-m*v+n*v-o*w+o*z+p*q-p*z, 2) -4*(m*p-n*o)*(-a*w+a*z+q*r-q*v-r*z+v*w), .5)
         t1 = (sqrt -a*n+m*r-m*v+n*v-o*w+o*z+p*q-p*z)/denom
         t2 = (-sqrt -a*n+m*r-m*v+n*v-o*w+o*z+p*q-p*z)/denom
         # There are two solutions. One is when the two lines intersect, the other is the one we want. Determine which is which.
+        # Todo: Check if the point of collision is inside the 
         if(abs(o*t1 + a - p*t1 - r) < MIN_ERROR and abs(m*t1 + q - n*t1 - w) < MIN_ERROR):
             return t2
         else:
