@@ -11,16 +11,25 @@ def pointIsInPolygon(point, polygon):
 
     #Because python is a dumb language, we don't (and can't) declare our variables
     #outside the loop as scope doesn't really exist
-    pb = corners[len(corners) - 1]
-    for i in range(len(corners)):
+    pb = polygon[len(polygon) - 1]
+    for i in range(len(polygon)):
         pa = pb
-        pb = corners[i]
+        pb = polygon[i]
 
         a = -(pb[1] - pa[1])
         b = pb[0] - pa[0]
         c = -(a * pa[0] + b * pa[1])
 
-        if (a * wallCorner[0] + b * wallCorner[1] + c) >= -MIN_ERROR:
+        if (a * point[0] + b * point[1] + c) >= -MIN_ERROR:
             return False
             break
     return True
+def getNormalVector(self, pa, pb, point):
+        a = -(pb[1] - pa[1])
+        b = pb[0] - pa[0]
+        c = -(a * pa[0] + b * pa[1])
+        d = (a*point[0] + b*point[1] + c)
+        
+        v = (pa[1]  - pb[1], pb[0] - pa[0])
+        
+        return (-d*v[0], -d*v[1])
