@@ -9,22 +9,28 @@ class wall:
         return (self.pa, self.pb)
     def isFloor(self):
         return isFloor
-    def getNormalVector(self, point):
-        #Todo: Make the direction of the vector vary based on the point.
-        return (pa[1]  - pb[1], pb[0] - pa[0])
-    def pointIsOnLine(self, point):
+    def getNormalVector(self, carCOM):
+        a = -(pb[1] - pa[1])
+        b = pb[0] - pa[0]
+        c = -(a * pa[0] + b * pa[1])
+        d = (a*carCorner[0] + b*carCorner[1] + c)
+        
+        v = (pa[1]  - pb[1], pb[0] - pa[0])
+        
+        return (-d*v[0], -d*v[1])
+    def pointIsOnWall(self, point):
         return pointIsOnLine(self.pa, self.pb, point)
 
 class Walls:
     #Takes in tuples of wall tuples.
     def __init__(self):
-        self.corners = []
-        self.walls = set([])
+        self.corners = set([])
+        self.walls = []
 
     #Overloaded constructor, adds walls
     def __init__(self, walls):
-        self.corners = []
-        self.walls = set([])
+        self.corners = set([])
+        self.walls = []
         for w in walls:
             self.addWall(self, w)
 
@@ -52,7 +58,7 @@ class Walls:
                     if t > maxTime:
                         maxTime = t
         #Next check if the wall vertexes are in the 
-        s = self.walls.copy()
+        s = self.corners.copy()
         while len(s) > 0:
             wallCorner = s.pop()
             
@@ -71,7 +77,20 @@ class Walls:
                             
         return maxTime
 
-    def getWallCollisionPoints(self, corners):
-        #Todo
+    def getWallCollisionPoints(self, corners, COM):
         #Return a list of collision coordinates with vectors for the normal force
-        return []
+        cols = []
+        for c in corners:
+            for w in self.walls:
+                if w.pointIsOnWall(c):
+                    cols.append(c, w.getNormalVector(COM))
+        s = self.corners.copy()
+        while len(s) > 0:
+            wallCorner = s.pop()
+            pb = corners[len(corners) - 1]
+            for i in range(len(corners)):
+                pa = pb
+                pb = corners[i]
+                if(pointIsOnLine(pa, pb, wallCorner)):
+                    cols.append(wallCorner, getNormalVector(pa, pb, wallCorner))
+        return cols
