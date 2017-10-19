@@ -1,3 +1,5 @@
+from utilities.py import *
+
 class wall:
     def __init__(self, pa, pb, isFloor):
         self.pa = pa
@@ -7,11 +9,11 @@ class wall:
         return (self.pa, self.pb)
     def isFloor(self):
         return isFloor
-    def getNormalVector(self):
+    def getNormalVector(self, point):
+        #Todo: Make the direction of the vector vary based on the point.
         return (pa[1]  - pb[1], pb[0] - pa[0])
     def pointIsOnLine(self, point):
-        #Todo
-        return False
+        return pointIsOnLine(self.pa, self.pb, point)
 
 class Walls:
     #Takes in tuples of wall tuples.
@@ -34,7 +36,6 @@ class Walls:
 
     
     def getCollisionTimes(self, corners, cornerSpeeds):
-        #todo: implement everything
         maxTime = 0
         #First check for any intersections between point routes and walls 
         for i in range(len(corners)):
@@ -54,27 +55,9 @@ class Walls:
         s = self.walls.copy()
         while len(s) > 0:
             wallCorner = s.pop()
-            #Assumes counterclockwise orientation of car corners.
-            #In order for the point to be inside the car, the point must be on the
-            #left side of the wall, orientated towards point b from point a.
-
-            #Because python is a dumb language, we don't (and can't) declare our variables
-            #outside the loop as scope doesn't really exist
-            found = True
-            pb = corners[len(corners) - 1]
-            for i in range(len(corners)):
-                pa = pb
-                pb = corners[i]
-
-                a = -(pb[1] - pa[1])
-                b = pb[0] - pa[0]
-                c = -(a * pa[0] + b * pa[1])
-
-                if (a * wallCorner[0] + b * wallCorner[1] + c) >= -MIN_ERROR:
-                    found = False
-                    break
-                    
-            if(found):
+            
+            
+            if(pointIsInPolygon(wallCorner, corners)):
                 pb = corners[len(corners) - 1]
                 sb = cornerSpeeds[len(corners) - 1]
                 for i in range(len(corners)):
