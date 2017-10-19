@@ -30,8 +30,9 @@ def linePassesThroughAPoint(p1, p1speed, pa, paspeed, p0):
     # The solution, of course, is
     # x = (sqrt((-a n + m r - m v + n v - o w + o z + p q - p z)^2 - 4 (m p - n o) (-a w + a z + q r - q v - r z + v w)) - a n + m r - m v + n v - o w + o z + p q - p z)/(2 (n o - m p))
     # when n o - m p!=0
-    # Otherwise, the solution is
-    # [insert solution here]
+    # Otherwise, the solution is triangular. We can calculate the angle between the line between point a and b and the line between points
+    # a and 0, we know the distance between points a and 0, we can find the distance between point 0 and the line.
+    # Then the solution is simply the distance over the speed.
     m = p1speed[1]
     q = p1[1]
     o = p1speed[0]
@@ -42,17 +43,20 @@ def linePassesThroughAPoint(p1, p1speed, pa, paspeed, p0):
     r = pa[0]
     z = p0[1]
     v = p0[0]
-
+    
+    #Todo: Verify that the point of collision is actually on the line.
     denom = (2*(n*o-m*p))
+    #The points are moving in parallel. 
     if abs(denom) < MIN_ERROR:
-        #Todo
-        print("cool, but unsolved")
+        theta = math.atan2(p0[1] - pa[1], p0[0] - pa[0]) - math.atan2(pb[1] - pa[1], pb[0] - pa[0])
+        dist = math.pow(math.pow(p0[1] - pa[1], 2) + math.pow(p0[0] - pa[0], 2), .5) * math.sin(theta)
+        speed = math.pow(math.pow(p1speed[0], 2) + math.pow(p1speed[1], 2), .5)
+        return dist / speed
     else:
         sqrt = pow(pow(-a*n+m*r-m*v+n*v-o*w+o*z+p*q-p*z, 2) -4*(m*p-n*o)*(-a*w+a*z+q*r-q*v-r*z+v*w), .5)
         t1 = (sqrt -a*n+m*r-m*v+n*v-o*w+o*z+p*q-p*z)/denom
         t2 = (-sqrt -a*n+m*r-m*v+n*v-o*w+o*z+p*q-p*z)/denom
         # There are two solutions. One is when the two lines intersect, the other is the one we want. Determine which is which.
-        # Todo: Check if the point of collision is inside the 
         if(abs(o*t1 + a - p*t1 - r) < MIN_ERROR and abs(m*t1 + q - n*t1 - w) < MIN_ERROR):
             return t2
         else:
