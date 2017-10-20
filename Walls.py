@@ -22,7 +22,7 @@ class wall:
         return pointIsOnLine(self.pa, self.pb, point)
 
 class Walls:
-    #Takes in tuples of wall tuples.
+    
     def __init__(self):
         self.corners = set([])
         self.walls = []
