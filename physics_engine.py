@@ -7,7 +7,6 @@ from settings import *
 MAX_SLOPE = 21600001 #max slope with this restriction and a 4k screen
 MIN_ERROR = 0.0001   #min difference tolerated
 
-
 def linePassesThroughAPoint(p1, p1speed, pa, paspeed, p0):
     # This function solves the problem of when the line between two parametric lines intersects a point.
     # Create two parametric lines with forms
